@@ -1005,17 +1005,23 @@
       </div>
       <div class="pill-strip" id="group-filter-bar">
         <button type="button" class="filter-pill active" data-filter="全部" onclick="setGroupFilter('全部')">全部群組</button>
+        <button type="button" class="filter-pill" data-filter="來點好康" onclick="setGroupFilter('來點好康')">來點好康</button>
+        <button type="button" class="filter-pill" data-filter="省錢8群" onclick="setGroupFilter('省錢8群')">省錢8群</button>
         <button type="button" class="filter-pill" data-filter="油飯DD" onclick="setGroupFilter('油飯DD')">油飯DD</button>
-        <button type="button" class="filter-pill" data-filter="春日部" onclick="setGroupFilter('春日部')">春日部</button>
-        <button type="button" class="filter-pill" data-filter="howcome" onclick="setGroupFilter('howcome')">howcome</button>
       </div>
       <div class="pill-strip" id="platform-filter-bar">
         <button type="button" class="filter-pill active" data-filter="全部" onclick="setPlatformFilter('全部')">全部平台</button>
-        <button type="button" class="filter-pill" data-filter="酷澎" onclick="setPlatformFilter('酷澎')">酷澎</button>
         <button type="button" class="filter-pill" data-filter="蝦皮" onclick="setPlatformFilter('蝦皮')">蝦皮</button>
-        <button type="button" class="filter-pill" data-filter="Trip.com" onclick="setPlatformFilter('Trip.com')">Trip.com</button>
-        <button type="button" class="filter-pill" data-filter="LINE旅遊" onclick="setPlatformFilter('LINE旅遊')">LINE旅遊</button>
+        <button type="button" class="filter-pill" data-filter="酷澎" onclick="setPlatformFilter('酷澎')">酷澎</button>
+        <button type="button" class="filter-pill" data-filter="momo" onclick="setPlatformFilter('momo')">momo</button>
+        <button type="button" class="filter-pill" data-filter="超商/點數" onclick="setPlatformFilter('超商/點數')">超商/點數</button>
+        <button type="button" class="filter-pill" data-filter="旅遊票券" onclick="setPlatformFilter('旅遊票券')">旅遊票券</button>
+        <button type="button" class="filter-pill" data-filter="金融支付" onclick="setPlatformFilter('金融支付')">金融支付</button>
         <button type="button" class="filter-pill" data-filter="其他" onclick="setPlatformFilter('其他')">其他</button>
+      </div>
+      <div class="subtab-bar" id="pending-pref-bar">
+        <span>待確認依個人興趣優先排序</span>
+        <button type="button" class="filter-pill" id="only-pref-btn" onclick="toggleOnlyPreferred()">只看符合興趣分類</button>
       </div>
       <div class="subtab-bar" id="filtered-subbar" style="display:none;">
         <span>過濾檢視模式：</span>
@@ -1177,13 +1183,14 @@
           </div>
           <div class="form-group">
             <label class="form-label">監控群組清單</label>
-            <input type="text" id="set-groups" class="form-input" value="油飯DD,春日部,howcome">
+            <input type="text" id="set-groups" class="form-input" value="來點好康,省錢8群,油飯DD">
           </div>
         </div>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button type="button" class="icon-btn primary" style="flex:1; justify-content:center;" onclick="saveAllSettings()">儲存系統設定</button>
           <button type="button" class="icon-btn" onclick="triggerTestLineNotify()">發送 LINE 測試通知</button>
+          <button type="button" class="icon-btn" onclick="applyPresetFromSettings()">套用三群組語料分類與偏好預設</button>
         </div>
 
         <div id="settings-result-banner" class="result-banner"></div>
@@ -1200,8 +1207,8 @@
           <label class="form-label">iPhone 捷徑 POST JSON 格式範本</label>
           <div class="code-block">{
   "action": "ingestNotification",
-  "group": "油飯DD",
-  "sender": "版主",
+  "group": "來點好康 / 省錢8群 / 油飯DD",
+  "sender": "版主或發送者",
   "text": "捷徑收到的訊息內容"
 }</div>
         </div>
@@ -1214,7 +1221,7 @@
         <div class="version-footer">
           <div>
             <span style="color:var(--text-muted);">系統版本：</span>
-            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.0.0</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.0</span>
           </div>
           <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
         </div>
@@ -1226,7 +1233,7 @@
 
   <script>
     // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
-    const PWA_VERSION = "1.0.0";
+    const PWA_VERSION = "1.1.0";
     const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
     const CACHE_KEY = "deals_fast_dash_cache_v1";
 
@@ -1241,6 +1248,7 @@
       filteredSubMode: "已過濾",
       groupFilter: "全部",
       platformFilter: "全部",
+      onlyPreferredPending: false,
       searchQuery: "",
       activeRulesTab: "白名單",
       pendingTrackDeal: null
@@ -1428,6 +1436,15 @@
       if (target) target.classList.add("active");
       const subBar = document.getElementById("filtered-subbar");
       if (subBar) subBar.style.display = tab === "已過濾" ? "flex" : "none";
+      const prefBar = document.getElementById("pending-pref-bar");
+      if (prefBar) prefBar.style.display = tab === "待確認" ? "flex" : "none";
+      renderDeals();
+    }
+
+    function toggleOnlyPreferred() {
+      appState.onlyPreferredPending = !appState.onlyPreferredPending;
+      const btn = document.getElementById("only-pref-btn");
+      if (btn) btn.classList.toggle("active", appState.onlyPreferredPending);
       renderDeals();
     }
 
@@ -1510,6 +1527,7 @@
 
       const list = appState.deals.filter(function(d) {
         if (d.status !== targetStatus) return false;
+        if (appState.activeTab === "待確認" && appState.onlyPreferredPending && !d.isPreferredCategory) return false;
         if (grp !== "全部" && String(d.group || "").indexOf(grp) === -1) return false;
         if (plat !== "全部" && d.platform !== plat) return false;
         if (q) {
@@ -1521,6 +1539,15 @@
         }
         return true;
       });
+
+      if (appState.activeTab === "待確認") {
+        list.sort(function(a, b) {
+          const pa = a.isPreferredCategory ? 1 : 0;
+          const pb = b.isPreferredCategory ? 1 : 0;
+          if (pa !== pb) return pb - pa;
+          return 0;
+        });
+      }
 
       if (list.length === 0) {
         container.innerHTML = '<div class="empty-state">目前「' + escapeHtml(targetStatus) + '」分類下沒有符合條件的情報。<br>您可以切換群組或平台篩選，或點右上角「匯入測試」貼上訊息試算。</div>';
@@ -1534,6 +1561,7 @@
         let badges = "";
         if (isFree) badges += '<span class="badge free">免費/白名單</span>';
         else if (isWatch) badges += '<span class="badge watch">關注命中</span>';
+        else if (d.status === "待確認" && d.isPreferredCategory) badges += '<span class="badge watch">符合興趣</span>';
         if (d.platform) badges += '<span class="badge">' + escapeHtml(d.platform) + '</span>';
         if (d.category) badges += '<span class="badge cat">' + escapeHtml(d.category) + '</span>';
         if (d.group) badges += '<span class="badge">' + escapeHtml(d.group) + '</span>';
@@ -1952,7 +1980,7 @@
       document.getElementById("set-kw-threshold").value = s.AUTO_BLOCK_KEYWORD_THRESHOLD || "2";
       document.getElementById("set-cat-threshold").value = s.AUTO_BLOCK_CATEGORY_THRESHOLD || "3";
       document.getElementById("set-dedup-hours").value = s.DEDUP_WINDOW_HOURS || "24";
-      document.getElementById("set-groups").value = s.MONITORED_GROUPS || "油飯DD,春日部,howcome";
+      document.getElementById("set-groups").value = s.MONITORED_GROUPS || "來點好康,省錢8群,油飯DD";
       document.getElementById("set-gas-url").value = getGasUrl() || s.WEB_APP_URL || "";
       document.getElementById("settings-result-banner").style.display = "none";
       document.getElementById("settings-pwa-version-label").textContent = PWA_VERSION;
@@ -2039,6 +2067,33 @@
         .catch(function(err) {
           banner.className = "result-banner error";
           banner.textContent = "測試失敗：" + err.message;
+        });
+    }
+
+    function applyPresetFromSettings() {
+      const banner = document.getElementById("settings-result-banner");
+      banner.style.display = "block";
+      banner.className = "result-banner";
+      banner.textContent = "正在同步 16 大語料分類與個人喜好黑名單預設...";
+
+      callBackendApi("applyPreferencePreset", {})
+        .then(function(res) {
+          if (res && res.success) {
+            if (Array.isArray(res.rules)) appState.rules = res.rules;
+            if (Array.isArray(res.categories)) appState.categories = res.categories;
+            if (res.settings) appState.settings = res.settings;
+            saveCache();
+            banner.className = "result-banner";
+            banner.textContent = res.message || "套用成功";
+            loadDashboard(false);
+          } else {
+            banner.className = "result-banner error";
+            banner.textContent = (res && res.message) ? res.message : "套用失敗";
+          }
+        })
+        .catch(function(err) {
+          banner.className = "result-banner error";
+          banner.textContent = "套用失敗：" + err.message;
         });
     }
 
