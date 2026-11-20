@@ -1178,8 +1178,8 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">跨群組去重時間窗（小時）</label>
-            <input type="number" id="set-dedup-hours" class="form-input" min="1" max="168" value="24">
+            <label class="form-label">跨群組去重時間窗（分鐘）</label>
+            <input type="number" id="set-dedup-minutes" class="form-input" min="1" max="1440" value="30">
           </div>
           <div class="form-group">
             <label class="form-label">監控群組清單</label>
@@ -1221,7 +1221,7 @@
         <div class="version-footer">
           <div>
             <span style="color:var(--text-muted);">系統版本：</span>
-            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.0</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.1</span>
           </div>
           <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
         </div>
@@ -1233,7 +1233,7 @@
 
   <script>
     // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
-    const PWA_VERSION = "1.1.0";
+    const PWA_VERSION = "1.1.1";
     const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
     const CACHE_KEY = "deals_fast_dash_cache_v1";
 
@@ -1979,7 +1979,7 @@
       document.getElementById("set-free-override").checked = String(s.FREE_OVERRIDE_BLACKLIST || "TRUE").toUpperCase() !== "FALSE";
       document.getElementById("set-kw-threshold").value = s.AUTO_BLOCK_KEYWORD_THRESHOLD || "2";
       document.getElementById("set-cat-threshold").value = s.AUTO_BLOCK_CATEGORY_THRESHOLD || "3";
-      document.getElementById("set-dedup-hours").value = s.DEDUP_WINDOW_HOURS || "24";
+      document.getElementById("set-dedup-minutes").value = s.DEDUP_WINDOW_MINUTES || "30";
       document.getElementById("set-groups").value = s.MONITORED_GROUPS || "來點好康,省錢8群,油飯DD";
       document.getElementById("set-gas-url").value = getGasUrl() || s.WEB_APP_URL || "";
       document.getElementById("settings-result-banner").style.display = "none";
@@ -2017,7 +2017,7 @@
         FREE_OVERRIDE_BLACKLIST: document.getElementById("set-free-override").checked ? "TRUE" : "FALSE",
         AUTO_BLOCK_KEYWORD_THRESHOLD: document.getElementById("set-kw-threshold").value || "2",
         AUTO_BLOCK_CATEGORY_THRESHOLD: document.getElementById("set-cat-threshold").value || "3",
-        DEDUP_WINDOW_HOURS: document.getElementById("set-dedup-hours").value || "24",
+        DEDUP_WINDOW_MINUTES: document.getElementById("set-dedup-minutes").value || "30",
         MONITORED_GROUPS: document.getElementById("set-groups").value.trim(),
         WEB_APP_URL: customGasUrl || DEFAULT_GAS_WEB_APP_URL,
         THEME: localStorage.getItem("deals_theme") || "dark"
