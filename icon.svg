@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#312e81" />
+    </linearGradient>
+    <linearGradient id="tagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <path d="M132 136 H276 L388 248 L248 388 L136 276 V140 A4 4 0 0 1 132 136 Z" fill="url(#tagGrad)" opacity="0.95" />
+  <circle cx="198" cy="202" r="22" fill="#0f172a" />
+  <path d="M220 286 L278 228" stroke="#ffffff" stroke-width="20" stroke-linecap="round" />
+  <circle cx="232" cy="240" r="14" fill="#ffffff" />
+  <circle cx="272" cy="280" r="14" fill="#ffffff" />
+  <circle cx="356" cy="160" r="56" fill="url(#badgeGrad)" stroke="#0f172a" stroke-width="12" />
+  <path d="M332 160 L348 176 L382 142" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

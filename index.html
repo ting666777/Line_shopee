@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="優惠過濾">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>優惠情報過濾中心</title>
+  <meta name="theme-color" id="theme-color-meta" content="#0b0f19">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem("deals_theme") || "dark";
+        var valids = ["dark", "white", "milktea", "pink", "cyberpunk"];
+        var safe = valids.indexOf(t) !== -1 ? t : "dark";
+        document.documentElement.setAttribute("data-theme", safe);
+        var bgs = {
+          "dark": "#0b0f19",
+          "white": "#f8fafc",
+          "milktea": "#f6efe6",
+          "pink": "#fdf2f8",
+          "cyberpunk": "#080012"
+        };
+        var m = document.getElementById("theme-color-meta") || document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", bgs[safe] || "#0b0f19");
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    :root,
+    [data-theme="dark"] {
+      --bg: #0b0f19;
+      --card: #151d2f;
+      --card-soft: #111827;
+      --card-border: #243049;
+      --text: #f1f5f9;
+      --text-muted: #8292ab;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.16);
+      --good: #34d399;
+      --good-soft: rgba(52, 211, 153, 0.16);
+      --bad: #fb7185;
+      --bad-soft: rgba(251, 113, 133, 0.16);
+      --warn: #fbbf24;
+      --warn-soft: rgba(251, 191, 36, 0.15);
+      --info: #38bdf8;
+      --info-soft: rgba(56, 189, 248, 0.15);
+      --hero-bg: linear-gradient(145deg, #162035, #111827);
+      --pill-active-bg: #1f293d;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      --radius: 16px;
+    }
+
+    [data-theme="white"] {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --card-soft: #f1f5f9;
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.12);
+      --good: #059669;
+      --good-soft: rgba(5, 150, 105, 0.12);
+      --bad: #e11d48;
+      --bad-soft: rgba(225, 29, 72, 0.1);
+      --warn: #d97706;
+      --warn-soft: rgba(217, 119, 6, 0.12);
+      --info: #0284c7;
+      --info-soft: rgba(2, 132, 199, 0.12);
+      --hero-bg: linear-gradient(145deg, #ffffff, #f1f5f9);
+      --pill-active-bg: #ffffff;
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    [data-theme="milktea"] {
+      --bg: #f6efe6;
+      --card: #fffdf9;
+      --card-soft: #eee4d6;
+      --card-border: #dfcfbb;
+      --text: #4a3b32;
+      --text-muted: #8b7667;
+      --accent: #a67c52;
+      --accent-soft: rgba(166, 124, 82, 0.16);
+      --good: #4a8c6f;
+      --good-soft: rgba(74, 140, 111, 0.15);
+      --bad: #c65d47;
+      --bad-soft: rgba(198, 93, 71, 0.15);
+      --warn: #b7791f;
+      --warn-soft: rgba(183, 121, 31, 0.14);
+      --info: #5c7c99;
+      --info-soft: rgba(92, 124, 153, 0.14);
+      --hero-bg: linear-gradient(145deg, #fffdf9, #f3e8d8);
+      --pill-active-bg: #ffffff;
+      --shadow: 0 6px 20px rgba(74, 59, 50, 0.08);
+    }
+
+    [data-theme="pink"] {
+      --bg: #fdf2f8;
+      --card: #fffafc;
+      --card-soft: #fce7f3;
+      --card-border: #f5c2dc;
+      --text: #701a46;
+      --text-muted: #ad537c;
+      --accent: #ec4899;
+      --accent-soft: rgba(236, 72, 153, 0.14);
+      --good: #059669;
+      --good-soft: rgba(5, 150, 105, 0.13);
+      --bad: #e11d48;
+      --bad-soft: rgba(225, 29, 72, 0.12);
+      --warn: #d97706;
+      --warn-soft: rgba(217, 119, 6, 0.14);
+      --info: #0284c7;
+      --info-soft: rgba(2, 132, 199, 0.12);
+      --hero-bg: linear-gradient(145deg, #fffafc, #fce7f3);
+      --pill-active-bg: #ffffff;
+      --shadow: 0 6px 20px rgba(112, 26, 70, 0.07);
+    }
+
+    [data-theme="cyberpunk"] {
+      --bg: #080012;
+      --card: #130428;
+      --card-soft: #1d083a;
+      --card-border: #00f0ff;
+      --text: #fcee09;
+      --text-muted: #00f0ff;
+      --accent: #ff007f;
+      --accent-soft: rgba(255, 0, 127, 0.2);
+      --good: #00ff9f;
+      --good-soft: rgba(0, 255, 159, 0.16);
+      --bad: #ff0055;
+      --bad-soft: rgba(255, 0, 85, 0.2);
+      --warn: #fcee09;
+      --warn-soft: rgba(252, 238, 9, 0.15);
+      --info: #00f0ff;
+      --info-soft: rgba(0, 240, 255, 0.16);
+      --hero-bg: linear-gradient(145deg, #1f073b, #0c021c);
+      --pill-active-bg: #290a52;
+      --shadow: 0 8px 28px rgba(0, 240, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 84px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 14px 14px 36px;
+    }
+
+    /* Header */
+    .top-header {
+      background: var(--hero-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--good);
+    }
+
+    .status-dot.syncing {
+      background: var(--warn);
+      animation: pulse 1s infinite;
+    }
+
+    .status-dot.error {
+      background: var(--bad);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid var(--card-border);
+      background: var(--card-soft);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 7px 11px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.96);
+    }
+
+    .icon-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .icon-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    /* Tabs */
+    .tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 13px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .tab-card.active {
+      background: var(--pill-active-bg);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .tab-count {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .tab-label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .tab-card.active .tab-label {
+      color: var(--text);
+    }
+
+    .tab-pending .tab-count { color: var(--warn); }
+    .tab-notified .tab-count { color: var(--good); }
+    .tab-interested .tab-count { color: var(--info); }
+    .tab-filtered .tab-count { color: var(--text-muted); }
+
+    /* Filters */
+    .filter-panel {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 11px;
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 9px 12px 9px 34px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: var(--card-soft);
+      color: var(--text);
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .pill-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .pill-strip::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      white-space: nowrap;
+      border: 1px solid var(--card-border);
+      background: var(--card-soft);
+      color: var(--text-muted);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .filter-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .subtab-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 4px;
+      border-top: 1px dashed var(--card-border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Deal Cards */
+    .deal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .deal-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.16s ease, opacity 0.16s ease;
+    }
+
+    .deal-meta-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+    }
+
+    .badge.free {
+      background: var(--good-soft);
+      border-color: var(--good);
+      color: var(--good);
+    }
+
+    .badge.watch {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .badge.cat {
+      background: var(--info-soft);
+      border-color: transparent;
+      color: var(--info);
+    }
+
+    .badge.merged {
+      background: var(--warn-soft);
+      border-color: transparent;
+      color: var(--warn);
+    }
+
+    .deal-time {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .deal-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .deal-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.45;
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .price-box {
+      flex-shrink: 0;
+      text-align: right;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 5px 10px;
+      min-width: 68px;
+    }
+
+    .price-main {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--good);
+      line-height: 1.2;
+    }
+
+    .price-sub {
+      font-size: 0.7rem;
+      color: var(--warn);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .deal-reason {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--card-soft);
+      padding: 6px 10px;
+      border-radius: 8px;
+      line-height: 1.4;
+    }
+
+    /* Keyword chips */
+    .kw-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .kw-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 3px 6px 3px 8px;
+      font-size: 0.74rem;
+      color: var(--text);
+    }
+
+    .kw-penalty {
+      color: var(--warn);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .kw-block-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: var(--bad-soft);
+      color: var(--bad);
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .kw-block-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* URL links */
+    .links-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-decoration: none;
+      background: var(--info-soft);
+      color: var(--info);
+      border: 1px solid transparent;
+    }
+
+    .link-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .raw-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      align-self: flex-start;
+    }
+
+    .raw-box {
+      display: none;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.76rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .raw-box.open {
+      display: block;
+    }
+
+    /* Action Footer */
+    .deal-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      padding-top: 8px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .deal-actions.cols-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 580px) {
+      .deal-actions.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .act-btn {
+      border: 1px solid var(--card-border);
+      background: var(--card-soft);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      text-align: center;
+      transition: transform 0.1s ease;
+    }
+
+    .act-btn:active { transform: scale(0.97); }
+    .act-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .act-btn.dislike {
+      background: var(--bad-soft);
+      border-color: transparent;
+      color: var(--bad);
+    }
+
+    .act-btn.block-cat {
+      background: var(--card-soft);
+      border-color: var(--bad);
+      color: var(--bad);
+    }
+
+    .act-btn.like {
+      background: var(--good-soft);
+      border-color: transparent;
+      color: var(--good);
+    }
+
+    .act-btn.track {
+      background: var(--accent-soft);
+      border-color: transparent;
+      color: var(--accent);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--card);
+      border: 1px dashed var(--card-border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.72);
+      z-index: 900;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+
+    @media (min-width: 600px) {
+      .modal-backdrop {
+        align-items: center;
+        padding: 18px;
+      }
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      width: 100%;
+      max-width: 600px;
+      max-height: 88vh;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    @media (min-width: 600px) {
+      .modal-sheet {
+        border-radius: 18px;
+      }
+    }
+
+    .modal-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .close-btn {
+      border: 1px solid var(--card-border);
+      background: var(--card-soft);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-size: 0.86rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .form-textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    @media (min-width: 480px) {
+      .theme-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .theme-opt {
+      border: 1px solid var(--card-border);
+      background: var(--card-soft);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .theme-opt.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 9px 11px;
+    }
+
+    .rule-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .rule-val {
+      font-size: 0.88rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .rule-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .code-block {
+      background: var(--card-soft);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.74rem;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--card);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      z-index: 1200;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      max-width: 92vw;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .result-banner {
+      background: var(--good-soft);
+      border: 1px solid var(--good);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .result-banner.error {
+      background: var(--bad-soft);
+      border-color: var(--bad);
+    }
+
+    .version-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="top-header">
+      <div class="header-row">
+        <div>
+          <h1 class="brand-title">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent);">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            優惠情報過濾中心
+          </h1>
+          <div class="brand-sub">
+            <span class="status-dot" id="sync-dot"></span>
+            <span id="sync-status-text">載入快取中</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="icon-btn" onclick="openImportModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            匯入測試
+          </button>
+          <button type="button" class="icon-btn" onclick="openRulesModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            規則管理
+          </button>
+          <button type="button" class="icon-btn" onclick="openSettingsModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            設定
+          </button>
+          <button type="button" class="icon-btn primary" onclick="loadDashboard(true)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            重新整理
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="tabs-grid">
+      <div class="tab-card tab-pending active" id="tab-待確認" onclick="switchTab('待確認')">
+        <span class="tab-count" id="cnt-pending">0</span>
+        <span class="tab-label">待確認</span>
+      </div>
+      <div class="tab-card tab-notified" id="tab-已通知" onclick="switchTab('已通知')">
+        <span class="tab-count" id="cnt-notified">0</span>
+        <span class="tab-label">精華通知</span>
+      </div>
+      <div class="tab-card tab-interested" id="tab-已收藏" onclick="switchTab('已收藏')">
+        <span class="tab-count" id="cnt-interested">0</span>
+        <span class="tab-label">已收藏</span>
+      </div>
+      <div class="tab-card tab-filtered" id="tab-已過濾" onclick="switchTab('已過濾')">
+        <span class="tab-count" id="cnt-filtered">0</span>
+        <span class="tab-label">已過濾</span>
+      </div>
+    </section>
+
+    <section class="filter-panel">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="search" id="search-input" class="search-input" placeholder="搜尋商品名稱、關鍵字、分類或價格..." oninput="onSearchChange(this.value)">
+      </div>
+      <div class="pill-strip" id="group-filter-bar">
+        <button type="button" class="filter-pill active" data-filter="全部" onclick="setGroupFilter('全部')">全部群組</button>
+        <button type="button" class="filter-pill" data-filter="油飯DD" onclick="setGroupFilter('油飯DD')">油飯DD</button>
+        <button type="button" class="filter-pill" data-filter="春日部" onclick="setGroupFilter('春日部')">春日部</button>
+        <button type="button" class="filter-pill" data-filter="howcome" onclick="setGroupFilter('howcome')">howcome</button>
+      </div>
+      <div class="pill-strip" id="platform-filter-bar">
+        <button type="button" class="filter-pill active" data-filter="全部" onclick="setPlatformFilter('全部')">全部平台</button>
+        <button type="button" class="filter-pill" data-filter="酷澎" onclick="setPlatformFilter('酷澎')">酷澎</button>
+        <button type="button" class="filter-pill" data-filter="蝦皮" onclick="setPlatformFilter('蝦皮')">蝦皮</button>
+        <button type="button" class="filter-pill" data-filter="Trip.com" onclick="setPlatformFilter('Trip.com')">Trip.com</button>
+        <button type="button" class="filter-pill" data-filter="LINE旅遊" onclick="setPlatformFilter('LINE旅遊')">LINE旅遊</button>
+        <button type="button" class="filter-pill" data-filter="其他" onclick="setPlatformFilter('其他')">其他</button>
+      </div>
+      <div class="subtab-bar" id="filtered-subbar" style="display:none;">
+        <span>過濾檢視模式：</span>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="filter-pill active" id="sub-filtered-btn" onclick="setFilteredSubMode('已過濾')">偏好黑名單 (<span id="cnt-sub-filtered">0</span>)</button>
+          <button type="button" class="filter-pill" id="sub-ignored-btn" onclick="setFilteredSubMode('已忽略')">已忽略雜訊 (<span id="cnt-sub-ignored">0</span>)</button>
+        </div>
+      </div>
+    </section>
+
+    <main id="deal-list" class="deal-list"></main>
+  </div>
+
+  <!-- Track / Subscribe Modal -->
+  <div class="modal-backdrop" id="track-modal" onclick="closeModalIfBackdrop(event, 'track-modal')">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <h2 class="modal-title">加入收藏並追蹤未來通知</h2>
+        <button type="button" class="close-btn" onclick="closeModal('track-modal')">關閉</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:0.84rem; color:var(--text-muted); line-height:1.5;">
+          選擇要追蹤的關鍵字或分類，往後群組出現相符優惠時，系統會自動歸入「精華通知」並發送 LINE 推播。
+        </div>
+        <div class="form-group">
+          <label class="form-label">追蹤對象類型</label>
+          <select id="track-target-select" class="form-select" onchange="onTrackTargetTypeChange()">
+            <option value="關鍵字">關鍵字（精準追蹤商品或品牌）</option>
+            <option value="分類">分類（追蹤整個商品分類）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">追蹤內容</label>
+          <input type="text" id="track-value-input" class="form-input" placeholder="請輸入要自動通知的關鍵字或分類">
+          <div class="pill-strip" id="track-suggestions" style="margin-top:6px;"></div>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button type="button" class="icon-btn" onclick="confirmTrackInterested(false)">僅收藏不追蹤</button>
+          <button type="button" class="icon-btn primary" onclick="confirmTrackInterested(true)">收藏並啟用自動通知</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules Management Modal -->
+  <div class="modal-backdrop" id="rules-modal" onclick="closeModalIfBackdrop(event, 'rules-modal')">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <h2 class="modal-title">關鍵字與分類學習規則管理</h2>
+        <button type="button" class="close-btn" onclick="closeModal('rules-modal')">關閉</button>
+      </div>
+      <div class="modal-body">
+        <div class="pill-strip" id="rules-tab-bar">
+          <button type="button" class="filter-pill active" onclick="switchRulesTab('白名單')">強制白名單</button>
+          <button type="button" class="filter-pill" onclick="switchRulesTab('關注')">關注通知</button>
+          <button type="button" class="filter-pill" onclick="switchRulesTab('黑名單')">黑名單封鎖</button>
+          <button type="button" class="filter-pill" onclick="switchRulesTab('扣分')">扣分觀察中</button>
+        </div>
+
+        <div class="filter-panel" style="margin-bottom:0; padding:10px;">
+          <div class="form-row">
+            <select id="new-rule-type" class="form-select" onchange="onNewRuleTypeChange()">
+              <option value="白名單關鍵字">白名單關鍵字（強制通知）</option>
+              <option value="關注關鍵字">關注關鍵字（自動通知）</option>
+              <option value="關注分類">關注分類（自動通知）</option>
+              <option value="黑名單關鍵字">黑名單關鍵字（自動過濾）</option>
+              <option value="黑名單分類">黑名單分類（自動過濾）</option>
+            </select>
+            <input type="text" id="new-rule-value" class="form-input" placeholder="輸入關鍵字或分類名稱">
+          </div>
+          <div id="new-rule-cat-hints" class="pill-strip" style="display:none;"></div>
+          <button type="button" class="icon-btn primary" style="justify-content:center;" onclick="submitAddRule()">新增規則</button>
+        </div>
+
+        <div id="rules-list-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import / Test Modal -->
+  <div class="modal-backdrop" id="import-modal" onclick="closeModalIfBackdrop(event, 'import-modal')">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <h2 class="modal-title">匯入群組訊息紀錄與解析測試</h2>
+        <button type="button" class="close-btn" onclick="closeModal('import-modal')">關閉</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+          可直接貼入單則 LINE 訊息，或是像 1.txt 格式的多則群組對話匯出紀錄，系統會自動進行群組歸類、重複合併、雜訊剔除與規則判定。
+        </div>
+        <div class="form-group">
+          <label class="form-label">貼入訊息內容</label>
+          <textarea id="import-textarea" class="form-textarea" placeholder="貼上優惠訊息或 1.txt 完整紀錄..."></textarea>
+        </div>
+        <label class="switch-row" style="cursor:pointer;">
+          <span>測試匯入不觸發 LINE 推播通知</span>
+          <input type="checkbox" id="import-skip-notify" checked>
+        </label>
+        <div id="import-result-banner" class="result-banner"></div>
+        <button type="button" class="icon-btn primary" id="import-submit-btn" style="justify-content:center; padding:10px;" onclick="submitBatchImport()">開始解析並寫入資料庫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settings-modal" onclick="closeModalIfBackdrop(event, 'settings-modal')">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <h2 class="modal-title">系統設定與捷徑連線指南</h2>
+        <button type="button" class="close-btn" onclick="closeModal('settings-modal')">關閉</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">介面主題配色</label>
+          <div class="theme-grid" id="theme-grid">
+            <button type="button" class="theme-opt" data-theme-val="dark" onclick="selectTheme('dark')">深色暗夜</button>
+            <button type="button" class="theme-opt" data-theme-val="white" onclick="selectTheme('white')">純淨極簡</button>
+            <button type="button" class="theme-opt" data-theme-val="milktea" onclick="selectTheme('milktea')">溫柔奶茶</button>
+            <button type="button" class="theme-opt" data-theme-val="pink" onclick="selectTheme('pink')">櫻花粉嫩</button>
+            <button type="button" class="theme-opt" data-theme-val="cyberpunk" onclick="selectTheme('cyberpunk')">賽博龐克</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">LINE Messaging API Channel Access Token（<span id="token-status-badge">未設定</span>）</label>
+          <input type="password" id="set-line-token" class="form-input" placeholder="貼入新的 Channel Access Token（留空則維持原設定）">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">LINE 推播目標 ID（群組 / 使用者 ID，留空預設 Broadcast 廣播）</label>
+          <input type="text" id="set-line-target" class="form-input" placeholder="例如 Cxxxxxxxxxxxxxxxx（或把 Bot 拉進群組輸入「綁定優惠通知」）">
+        </div>
+
+        <label class="switch-row" style="cursor:pointer;">
+          <span>啟用 LINE 自動推播通知</span>
+          <input type="checkbox" id="set-line-enabled" checked>
+        </label>
+
+        <label class="switch-row" style="cursor:pointer;">
+          <span>免費白名單永遠優先於黑名單封鎖</span>
+          <input type="checkbox" id="set-free-override" checked>
+        </label>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">關鍵字自動封鎖門檻（次）</label>
+            <input type="number" id="set-kw-threshold" class="form-input" min="1" max="20" value="2">
+          </div>
+          <div class="form-group">
+            <label class="form-label">分類自動封鎖門檻（次）</label>
+            <input type="number" id="set-cat-threshold" class="form-input" min="1" max="20" value="3">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">跨群組去重時間窗（小時）</label>
+            <input type="number" id="set-dedup-hours" class="form-input" min="1" max="168" value="24">
+          </div>
+          <div class="form-group">
+            <label class="form-label">監控群組清單</label>
+            <input type="text" id="set-groups" class="form-input" value="油飯DD,春日部,howcome">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="icon-btn primary" style="flex:1; justify-content:center;" onclick="saveAllSettings()">儲存系統設定</button>
+          <button type="button" class="icon-btn" onclick="triggerTestLineNotify()">發送 LINE 測試通知</button>
+        </div>
+
+        <div id="settings-result-banner" class="result-banner"></div>
+
+        <div class="form-group">
+          <label class="form-label">Apps Script Web App API 網址（供 iPhone 捷徑與 PWA 連線）</label>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="set-gas-url" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+            <button type="button" class="icon-btn" onclick="copyGasUrl()">複製</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">iPhone 捷徑 POST JSON 格式範本</label>
+          <div class="code-block">{
+  "action": "ingestNotification",
+  "group": "油飯DD",
+  "sender": "版主",
+  "text": "捷徑收到的訊息內容"
+}</div>
+        </div>
+
+        <div class="form-group" id="notify-logs-section">
+          <label class="form-label">最近 LINE 通知紀錄</label>
+          <div id="notify-logs-list" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;"></div>
+        </div>
+
+        <div class="version-footer">
+          <div>
+            <span style="color:var(--text-muted);">系統版本：</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.0.0</span>
+          </div>
+          <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
+    const PWA_VERSION = "1.0.0";
+    const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
+    const CACHE_KEY = "deals_fast_dash_cache_v1";
+
+    let appState = {
+      deals: [],
+      counts: { pending: 0, notified: 0, interested: 0, filtered: 0, ignored: 0, total: 0 },
+      rules: [],
+      categories: [],
+      settings: {},
+      notifyLogs: [],
+      activeTab: "待確認",
+      filteredSubMode: "已過濾",
+      groupFilter: "全部",
+      platformFilter: "全部",
+      searchQuery: "",
+      activeRulesTab: "白名單",
+      pendingTrackDeal: null
+    };
+
+    let lastResumeSyncTime = 0;
+    let toastTimer = null;
+
+    function getGasUrl() {
+      return localStorage.getItem("custom_deals_gas_url") || DEFAULT_GAS_WEB_APP_URL;
+    }
+
+    function isInsideGasIframe() {
+      return typeof window.google !== "undefined" && window.google.script && window.google.script.run;
+    }
+
+    function callBackendApi(action, payload) {
+      const req = Object.assign({ action: action }, payload || {});
+      return new Promise(function(resolve, reject) {
+        if (isInsideGasIframe()) {
+          window.google.script.run
+            .withSuccessHandler(function(res) { resolve(res); })
+            .withFailureHandler(function(err) { reject(new Error(err && err.message ? err.message : String(err))); })
+            .apiInvoke(req);
+          return;
+        }
+        const url = getGasUrl();
+        if (!url) {
+          reject(new Error("尚未設定 Apps Script Web App 網址"));
+          return;
+        }
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(req)
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(data) { resolve(data); })
+          .catch(function(err) { reject(err); });
+      });
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        el.classList.remove("show");
+      }, 2800);
+    }
+
+    function setSyncStatus(mode, text) {
+      const dot = document.getElementById("sync-dot");
+      const label = document.getElementById("sync-status-text");
+      if (dot) {
+        dot.className = "status-dot" + (mode === "syncing" ? " syncing" : (mode === "error" ? " error" : ""));
+      }
+      if (label) label.textContent = text;
+    }
+
+    function selectTheme(themeName, skipSave) {
+      const valids = ["dark", "white", "milktea", "pink", "cyberpunk"];
+      const safe = valids.indexOf(themeName) !== -1 ? themeName : "dark";
+      document.documentElement.setAttribute("data-theme", safe);
+      localStorage.setItem("deals_theme", safe);
+      const bgs = {
+        "dark": "#0b0f19",
+        "white": "#f8fafc",
+        "milktea": "#f6efe6",
+        "pink": "#fdf2f8",
+        "cyberpunk": "#080012"
+      };
+      const meta = document.getElementById("theme-color-meta");
+      if (meta) meta.setAttribute("content", bgs[safe] || "#0b0f19");
+      document.querySelectorAll(".theme-opt").forEach(function(btn) {
+        btn.classList.toggle("active", btn.getAttribute("data-theme-val") === safe);
+      });
+      if (!skipSave && appState.settings) {
+        appState.settings.THEME = safe;
+      }
+    }
+
+    function forceUpdatePwa() {
+      try { localStorage.removeItem("deals_pwa_version"); } catch (e) {}
+      const reloadNow = function() {
+        const sp = new URLSearchParams(window.location.search);
+        sp.set("force_reload", String(Date.now()));
+        window.location.replace(window.location.pathname + "?" + sp.toString());
+      };
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          return Promise.all(regs.map(function(r) { return r.unregister(); }));
+        }).then(function() {
+          if (window.caches) {
+            return caches.keys().then(function(keys) {
+              return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+            });
+          }
+        }).finally(reloadNow);
+      } else {
+        reloadNow();
+      }
+    }
+
+    function saveCache() {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          deals: appState.deals.slice(0, 250),
+          counts: appState.counts,
+          rules: appState.rules,
+          categories: appState.categories,
+          settings: appState.settings,
+          notifyLogs: appState.notifyLogs
+        }));
+      } catch (e) {}
+    }
+
+    function loadCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.deals)) {
+          appState.deals = parsed.deals;
+          appState.counts = parsed.counts || appState.counts;
+          appState.rules = parsed.rules || [];
+          appState.categories = parsed.categories || [];
+          appState.settings = parsed.settings || {};
+          appState.notifyLogs = parsed.notifyLogs || [];
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function recomputeCountsFromDeals() {
+      const counts = { pending: 0, notified: 0, interested: 0, filtered: 0, ignored: 0, total: appState.deals.length };
+      for (let i = 0; i < appState.deals.length; i++) {
+        const st = appState.deals[i].status;
+        if (st === "待確認") counts.pending++;
+        else if (st === "已通知") counts.notified++;
+        else if (st === "已收藏") counts.interested++;
+        else if (st === "已過濾") counts.filtered++;
+        else if (st === "已忽略") counts.ignored++;
+      }
+      appState.counts = counts;
+    }
+
+    function loadDashboard(showFeedback) {
+      setSyncStatus("syncing", "正在與雲端同步最新優惠...");
+      callBackendApi("getDashboardData", { limit: 400 })
+        .then(function(res) {
+          if (!res || !res.success) {
+            throw new Error(res && res.message ? res.message : "讀取失敗");
+          }
+          const d = res.data || {};
+          appState.deals = d.deals || [];
+          appState.counts = d.counts || appState.counts;
+          appState.rules = d.rules || [];
+          appState.categories = d.categories || [];
+          appState.settings = d.settings || {};
+          appState.notifyLogs = d.notifyLogs || [];
+          if (!localStorage.getItem("deals_theme") && appState.settings.THEME) {
+            selectTheme(appState.settings.THEME, true);
+          }
+          saveCache();
+          renderAll();
+          setSyncStatus("ok", "已同步 (" + (d.updatedAt || "剛才") + ")");
+          if (showFeedback) showToast("已更新最新優惠情報");
+        })
+        .catch(function(err) {
+          setSyncStatus("error", "連線失敗：" + err.message);
+          if (showFeedback) showToast("同步失敗：" + err.message);
+        });
+    }
+
+    function switchTab(tab) {
+      appState.activeTab = tab;
+      document.querySelectorAll(".tab-card").forEach(function(el) {
+        el.classList.remove("active");
+      });
+      const target = document.getElementById("tab-" + tab);
+      if (target) target.classList.add("active");
+      const subBar = document.getElementById("filtered-subbar");
+      if (subBar) subBar.style.display = tab === "已過濾" ? "flex" : "none";
+      renderDeals();
+    }
+
+    function setFilteredSubMode(mode) {
+      appState.filteredSubMode = mode;
+      document.getElementById("sub-filtered-btn").classList.toggle("active", mode === "已過濾");
+      document.getElementById("sub-ignored-btn").classList.toggle("active", mode === "已忽略");
+      renderDeals();
+    }
+
+    function setGroupFilter(grp) {
+      appState.groupFilter = grp;
+      document.querySelectorAll("#group-filter-bar .filter-pill").forEach(function(el) {
+        el.classList.toggle("active", el.getAttribute("data-filter") === grp);
+      });
+      renderDeals();
+    }
+
+    function setPlatformFilter(plat) {
+      appState.platformFilter = plat;
+      document.querySelectorAll("#platform-filter-bar .filter-pill").forEach(function(el) {
+        el.classList.toggle("active", el.getAttribute("data-filter") === plat);
+      });
+      renderDeals();
+    }
+
+    function onSearchChange(val) {
+      appState.searchQuery = String(val || "").trim().toLowerCase();
+      renderDeals();
+    }
+
+    function getPenaltyMap() {
+      const map = {};
+      for (let i = 0; i < appState.rules.length; i++) {
+        const r = appState.rules[i];
+        if (r.action === "觀察扣分") {
+          map[r.targetType + ":" + String(r.value).toLowerCase()] = r.penaltyCount;
+        }
+      }
+      return map;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeJsStr(str) {
+      return escapeHtml(
+        String(str || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/'/g, "\\'")
+          .replace(/\n/g, "\\n")
+          .replace(/\r/g, "")
+      );
+    }
+
+    function renderCounts() {
+      const c = appState.counts || {};
+      document.getElementById("cnt-pending").textContent = c.pending || 0;
+      document.getElementById("cnt-notified").textContent = c.notified || 0;
+      document.getElementById("cnt-interested").textContent = c.interested || 0;
+      document.getElementById("cnt-filtered").textContent = (c.filtered || 0) + (c.ignored || 0);
+      document.getElementById("cnt-sub-filtered").textContent = c.filtered || 0;
+      document.getElementById("cnt-sub-ignored").textContent = c.ignored || 0;
+    }
+
+    function renderDeals() {
+      const container = document.getElementById("deal-list");
+      const targetStatus = appState.activeTab === "已過濾" ? appState.filteredSubMode : appState.activeTab;
+      const q = appState.searchQuery;
+      const grp = appState.groupFilter;
+      const plat = appState.platformFilter;
+      const penaltyMap = getPenaltyMap();
+      const kwLimit = Number((appState.settings && appState.settings.AUTO_BLOCK_KEYWORD_THRESHOLD) || 2);
+
+      const list = appState.deals.filter(function(d) {
+        if (d.status !== targetStatus) return false;
+        if (grp !== "全部" && String(d.group || "").indexOf(grp) === -1) return false;
+        if (plat !== "全部" && d.platform !== plat) return false;
+        if (q) {
+          const hay = [
+            d.titleSummary, d.category, d.platform, d.group,
+            d.price, d.discount, (d.keywords || []).join(" "), d.rawText
+          ].join(" ").toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="empty-state">目前「' + escapeHtml(targetStatus) + '」分類下沒有符合條件的情報。<br>您可以切換群組或平台篩選，或點右上角「匯入測試」貼上訊息試算。</div>';
+        return;
+      }
+
+      const htmlParts = list.map(function(d) {
+        const isFree = String(d.reason || "").indexOf("白名單") !== -1 || d.price === "免費";
+        const isWatch = String(d.reason || "").indexOf("關注") !== -1;
+
+        let badges = "";
+        if (isFree) badges += '<span class="badge free">免費/白名單</span>';
+        else if (isWatch) badges += '<span class="badge watch">關注命中</span>';
+        if (d.platform) badges += '<span class="badge">' + escapeHtml(d.platform) + '</span>';
+        if (d.category) badges += '<span class="badge cat">' + escapeHtml(d.category) + '</span>';
+        if (d.group) badges += '<span class="badge">' + escapeHtml(d.group) + '</span>';
+        if (Number(d.mergeCount || 1) > 1) {
+          badges += '<span class="badge merged">合併 ' + Number(d.mergeCount) + ' 則</span>';
+        }
+
+        const priceHtml = (d.price || d.discount)
+          ? '<div class="price-box">' +
+              (d.price ? '<div class="price-main">' + escapeHtml(d.price) + '</div>' : '') +
+              (d.discount ? '<div class="price-sub">' + escapeHtml(d.discount) + '</div>' : '') +
+            '</div>'
+          : '';
+
+        const kwHtml = (d.keywords && d.keywords.length > 0)
+          ? '<div class="kw-row">' + d.keywords.map(function(kw) {
+              const pen = penaltyMap["關鍵字:" + kw.toLowerCase()];
+              const penHtml = pen ? '<span class="kw-penalty">(' + pen + '/' + kwLimit + ')</span>' : '';
+              return '<span class="kw-chip">' +
+                '<span>' + escapeHtml(kw) + '</span>' + penHtml +
+                '<button type="button" class="kw-block-btn" title="一鍵封鎖此關鍵字" onclick="quickBlockKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">封鎖</button>' +
+              '</span>';
+            }).join("") + '</div>'
+          : '';
+
+        const linksHtml = (d.urls && d.urls.length > 0)
+          ? '<div class="links-row">' + d.urls.map(function(u, idx) {
+              const label = d.urls.length > 1 ? ('前往連結 ' + (idx + 1)) : '前往優惠頁面';
+              return '<a class="link-btn" href="' + escapeHtml(u) + '" target="_blank" rel="noopener noreferrer">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>' +
+                label + '</a>';
+            }).join("") + '</div>'
+          : '';
+
+        let actionsHtml = "";
+        if (d.status === "待確認") {
+          const canBlockCat = d.category && d.category !== "其他商品" && d.category !== "免費好康";
+          actionsHtml = '<div class="deal-actions cols-4">' +
+            '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">沒興趣 (學習扣分)</button>' +
+            (canBlockCat
+              ? '<button type="button" class="act-btn block-cat" onclick="onBlockCategory(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(d.category) + '\')">封鎖此類：' + escapeHtml(d.category) + '</button>'
+              : '<button type="button" class="act-btn" disabled style="opacity:0.45; cursor:not-allowed;">不封鎖泛用分類</button>') +
+            '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">有興趣 (收藏)</button>' +
+            '<button type="button" class="act-btn track" onclick="openTrackModal(\'' + escapeJsStr(d.id) + '\')">追蹤此類/關鍵字</button>' +
+          '</div>';
+        } else if (d.status === "已過濾" || d.status === "已忽略") {
+          actionsHtml = '<div class="deal-actions">' +
+            '<button type="button" class="act-btn" onclick="onRestoreDeal(\'' + escapeJsStr(d.id) + '\', \'待確認\')">還原至待確認</button>' +
+            '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">改為有興趣</button>' +
+          '</div>';
+        } else {
+          actionsHtml = '<div class="deal-actions">' +
+            '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">改標沒興趣</button>' +
+            (d.status === "已通知"
+              ? '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">加入收藏</button>'
+              : '<button type="button" class="act-btn" onclick="onRestoreDeal(\'' + escapeJsStr(d.id) + '\', \'待確認\')">移回待確認</button>') +
+          '</div>';
+        }
+
+        const safeDomId = "raw_" + escapeHtml(d.id).replace(/[^a-zA-Z0-9_-]/g, "_");
+        return '<article class="deal-card" id="card_' + escapeHtml(d.id) + '">' +
+          '<div class="deal-meta-top">' +
+            '<div class="badge-group">' + badges + '</div>' +
+            '<span class="deal-time">' + escapeHtml(d.receivedAt) + '</span>' +
+          '</div>' +
+          '<div class="deal-body">' +
+            '<h3 class="deal-title">' + escapeHtml(d.titleSummary) + '</h3>' +
+            priceHtml +
+          '</div>' +
+          kwHtml +
+          linksHtml +
+          (d.reason ? '<div class="deal-reason">判定依據：' + escapeHtml(d.reason) + (d.lineSent && d.lineSent !== "否" ? ' | LINE：' + escapeHtml(d.lineSent) : '') + '</div>' : '') +
+          '<button type="button" class="raw-toggle" onclick="toggleRawBox(\'' + safeDomId + '\')">檢視原始訊息</button>' +
+          '<div class="raw-box" id="' + safeDomId + '">' + escapeHtml(d.rawText) + '</div>' +
+          actionsHtml +
+        '</article>';
+      });
+
+      container.innerHTML = htmlParts.join("");
+    }
+
+    function toggleRawBox(domId) {
+      const el = document.getElementById(domId);
+      if (el) el.classList.toggle("open");
+    }
+
+    function renderAll() {
+      renderCounts();
+      renderDeals();
+    }
+
+    function onMarkNotInterested(dealId) {
+      const idx = appState.deals.findIndex(function(d) { return d.id === dealId; });
+      if (idx !== -1) {
+        appState.deals[idx].status = "已過濾";
+        appState.deals[idx].reason = "使用者標記沒興趣";
+        recomputeCountsFromDeals();
+        saveCache();
+        renderAll();
+      }
+      showToast("已標記沒興趣，正在同步學習權重...");
+      callBackendApi("markNotInterested", { dealId: dealId })
+        .then(function(res) {
+          if (res && res.success) {
+            if (Array.isArray(res.rules)) appState.rules = res.rules;
+            if (res.autoFilteredCount > 0 || (res.newlyBlockedRules && res.newlyBlockedRules.length > 0)) {
+              showToast(res.message);
+              loadDashboard(false);
+            } else {
+              saveCache();
+              showToast(res.message || "已記錄沒興趣");
+            }
+          }
+        })
+        .catch(function(err) {
+          showToast("同步失敗：" + err.message);
+        });
+    }
+
+    function onBlockCategory(dealId, category) {
+      if (!category) return;
+      // 樂觀更新：直接把同分類的待確認卡片全部移到已過濾
+      let localSweep = 0;
+      appState.deals.forEach(function(d) {
+        if (d.id === dealId || (d.status === "待確認" && d.category === category)) {
+          d.status = "已過濾";
+          d.reason = "一鍵封鎖分類：" + category;
+          localSweep++;
+        }
+      });
+      recomputeCountsFromDeals();
+      saveCache();
+      renderAll();
+      showToast("已封鎖分類「" + category + "」，共移除 " + localSweep + " 筆待確認");
+
+      callBackendApi("blockRule", { dealId: dealId, targetType: "分類", value: category })
+        .then(function(res) {
+          if (res && res.success) {
+            if (Array.isArray(res.rules)) appState.rules = res.rules;
+            saveCache();
+            showToast(res.message);
+          }
+        })
+        .catch(function(err) { showToast("同步封鎖失敗：" + err.message); });
+    }
+
+    function quickBlockKeyword(dealId, keyword) {
+      if (!keyword) return;
+      const kwLow = keyword.toLowerCase();
+      let localSweep = 0;
+      appState.deals.forEach(function(d) {
+        const hasKw = (d.keywords || []).some(function(k) { return k.toLowerCase() === kwLow; }) ||
+          String(d.rawText || "").toLowerCase().indexOf(kwLow) !== -1;
+        if (d.id === dealId || (d.status === "待確認" && hasKw)) {
+          d.status = "已過濾";
+          d.reason = "一鍵封鎖關鍵字：" + keyword;
+          localSweep++;
+        }
+      });
+      recomputeCountsFromDeals();
+      saveCache();
+      renderAll();
+      showToast("已封鎖關鍵字「" + keyword + "」，移除 " + localSweep + " 筆相符項目");
+
+      callBackendApi("blockRule", { dealId: dealId, targetType: "關鍵字", value: keyword })
+        .then(function(res) {
+          if (res && res.success) {
+            if (Array.isArray(res.rules)) appState.rules = res.rules;
+            saveCache();
+            showToast(res.message);
+          }
+        })
+        .catch(function(err) { showToast("同步封鎖失敗：" + err.message); });
+    }
+
+    function onMarkInterestedSimple(dealId) {
+      const idx = appState.deals.findIndex(function(d) { return d.id === dealId; });
+      if (idx !== -1) {
+        appState.deals[idx].status = "已收藏";
+        appState.deals[idx].reason = "使用者標記有興趣";
+        recomputeCountsFromDeals();
+        saveCache();
+        renderAll();
+      }
+      showToast("已收藏此優惠");
+      callBackendApi("markInterested", { dealId: dealId })
+        .then(function(res) {
+          if (res && res.success && Array.isArray(res.rules)) {
+            appState.rules = res.rules;
+            saveCache();
+          }
+        })
+        .catch(function(err) { showToast("同步失敗：" + err.message); });
+    }
+
+    function openTrackModal(dealId) {
+      const deal = appState.deals.find(function(d) { return d.id === dealId; });
+      if (!deal) return;
+      appState.pendingTrackDeal = deal;
+      document.getElementById("track-target-select").value = "關鍵字";
+      onTrackTargetTypeChange();
+      openModal("track-modal");
+    }
+
+    function onTrackTargetTypeChange() {
+      const deal = appState.pendingTrackDeal;
+      if (!deal) return;
+      const targetType = document.getElementById("track-target-select").value;
+      const input = document.getElementById("track-value-input");
+      const sugg = document.getElementById("track-suggestions");
+
+      if (targetType === "分類") {
+        input.value = deal.category || "";
+        const cats = appState.categories.length > 0 ? appState.categories : [deal.category].filter(Boolean);
+        sugg.innerHTML = cats.map(function(c) {
+          return '<button type="button" class="filter-pill" onclick="document.getElementById(\'track-value-input\').value=\'' + escapeJsStr(c) + '\'">' + escapeHtml(c) + '</button>';
+        }).join("");
+      } else {
+        const kws = deal.keywords || [];
+        input.value = kws[0] || "";
+        sugg.innerHTML = kws.map(function(k) {
+          return '<button type="button" class="filter-pill" onclick="document.getElementById(\'track-value-input\').value=\'' + escapeJsStr(k) + '\'">' + escapeHtml(k) + '</button>';
+        }).join("");
+      }
+    }
+
+    function confirmTrackInterested(enableTrack) {
+      const deal = appState.pendingTrackDeal;
+      if (!deal) return;
+      const targetType = document.getElementById("track-target-select").value;
+      const subVal = enableTrack ? document.getElementById("track-value-input").value.trim() : "";
+
+      closeModal("track-modal");
+      deal.status = "已收藏";
+      deal.reason = subVal ? ("收藏並追蹤：" + subVal) : "使用者標記有興趣";
+      recomputeCountsFromDeals();
+      saveCache();
+      renderAll();
+
+      callBackendApi("markInterested", {
+        dealId: deal.id,
+        subscribeTarget: targetType,
+        subscribeValue: subVal
+      }).then(function(res) {
+        if (res && res.success) {
+          if (Array.isArray(res.rules)) appState.rules = res.rules;
+          saveCache();
+          showToast(res.message);
+        }
+      }).catch(function(err) {
+        showToast("儲存失敗：" + err.message);
+      });
+    }
+
+    function onRestoreDeal(dealId, targetStatus) {
+      const idx = appState.deals.findIndex(function(d) { return d.id === dealId; });
+      if (idx !== -1) {
+        appState.deals[idx].status = targetStatus;
+        appState.deals[idx].reason = "使用者手動還原為" + targetStatus;
+        recomputeCountsFromDeals();
+        saveCache();
+        renderAll();
+      }
+      callBackendApi("restoreDeal", { dealId: dealId, status: targetStatus })
+        .then(function(res) {
+          if (res && res.success) showToast(res.message);
+        })
+        .catch(function(err) { showToast("還原失敗：" + err.message); });
+    }
+
+    // Rules Modal
+    function openRulesModal() {
+      onNewRuleTypeChange();
+      renderRulesList();
+      openModal("rules-modal");
+    }
+
+    function switchRulesTab(tab) {
+      appState.activeRulesTab = tab;
+      document.querySelectorAll("#rules-tab-bar .filter-pill").forEach(function(el) {
+        el.classList.toggle("active", el.textContent.indexOf(tab) !== -1);
+      });
+      renderRulesList();
+    }
+
+    function onNewRuleTypeChange() {
+      const type = document.getElementById("new-rule-type").value;
+      const hints = document.getElementById("new-rule-cat-hints");
+      if (type.indexOf("分類") !== -1 && appState.categories.length > 0) {
+        hints.style.display = "flex";
+        hints.innerHTML = appState.categories.map(function(c) {
+          return '<button type="button" class="filter-pill" onclick="document.getElementById(\'new-rule-value\').value=\'' + escapeJsStr(c) + '\'">' + escapeHtml(c) + '</button>';
+        }).join("");
+      } else {
+        hints.style.display = "none";
+      }
+    }
+
+    function renderRulesList() {
+      const container = document.getElementById("rules-list-container");
+      const tab = appState.activeRulesTab;
+      const filtered = appState.rules.filter(function(r) {
+        if (tab === "白名單") return r.action === "強制通知";
+        if (tab === "關注") return r.action === "關注通知";
+        if (tab === "黑名單") return r.action === "自動封鎖";
+        return r.action === "觀察扣分";
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="padding:20px;">此分頁目前沒有任何規則紀錄。</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(function(r) {
+        return '<div class="rule-item">' +
+          '<div class="rule-main">' +
+            '<div class="rule-val">' + escapeHtml(r.value) + ' <span class="badge">' + escapeHtml(r.ruleType) + '</span></div>' +
+            '<div class="rule-sub">扣分：' + Number(r.penaltyCount || 0) + ' | 命中：' + Number(r.hitCount || 0) + (r.note ? ' | ' + escapeHtml(r.note) : '') + '</div>' +
+          '</div>' +
+          '<button type="button" class="kw-block-btn" style="padding:5px 9px;" onclick="deleteRuleById(\'' + escapeJsStr(r.id) + '\')">刪除</button>' +
+        '</div>';
+      }).join("");
+    }
+
+    function submitAddRule() {
+      const ruleType = document.getElementById("new-rule-type").value;
+      const value = document.getElementById("new-rule-value").value.trim();
+      if (!value) {
+        showToast("請輸入規則內容");
+        return;
+      }
+      callBackendApi("addRule", { ruleType: ruleType, value: value })
+        .then(function(res) {
+          if (!res || !res.success) {
+            showToast(res && res.message ? res.message : "新增失敗");
+            return;
+          }
+          document.getElementById("new-rule-value").value = "";
+          if (Array.isArray(res.rules)) appState.rules = res.rules;
+          renderRulesList();
+          saveCache();
+          showToast(res.message);
+          if (res.autoFilteredCount > 0) loadDashboard(false);
+        })
+        .catch(function(err) { showToast("新增失敗：" + err.message); });
+    }
+
+    function deleteRuleById(ruleId) {
+      callBackendApi("deleteRule", { ruleId: ruleId })
+        .then(function(res) {
+          if (res && res.success) {
+            appState.rules = res.rules || [];
+            renderRulesList();
+            saveCache();
+            showToast("已刪除規則");
+          }
+        })
+        .catch(function(err) { showToast("刪除失敗：" + err.message); });
+    }
+
+    // Batch Import Modal
+    function openImportModal() {
+      const banner = document.getElementById("import-result-banner");
+      banner.style.display = "none";
+      openModal("import-modal");
+    }
+
+    function submitBatchImport() {
+      const text = document.getElementById("import-textarea").value.trim();
+      if (!text) {
+        showToast("請先貼上要測試或匯入的訊息內容");
+        return;
+      }
+      const skipNotify = document.getElementById("import-skip-notify").checked;
+      const btn = document.getElementById("import-submit-btn");
+      const banner = document.getElementById("import-result-banner");
+      btn.disabled = true;
+      btn.textContent = "解析寫入中...";
+
+      callBackendApi("batchImport", { text: text, sendLineNotify: !skipNotify })
+        .then(function(res) {
+          btn.disabled = false;
+          btn.textContent = "開始解析並寫入資料庫";
+          banner.style.display = "block";
+          if (!res || !res.success) {
+            banner.className = "result-banner error";
+            banner.textContent = res && res.message ? res.message : "匯入失敗";
+            return;
+          }
+          banner.className = "result-banner";
+          banner.textContent = res.message;
+          loadDashboard(false);
+        })
+        .catch(function(err) {
+          btn.disabled = false;
+          btn.textContent = "開始解析並寫入資料庫";
+          banner.style.display = "block";
+          banner.className = "result-banner error";
+          banner.textContent = "匯入失敗：" + err.message;
+        });
+    }
+
+    // Settings Modal
+    function openSettingsModal() {
+      const s = appState.settings || {};
+      const currentTheme = localStorage.getItem("deals_theme") || s.THEME || "dark";
+      selectTheme(currentTheme, true);
+
+      document.getElementById("token-status-badge").textContent = s.hasLineToken
+        ? ("已設定 " + (s.lineTokenPreview || ""))
+        : "尚未設定";
+      document.getElementById("set-line-token").value = "";
+      document.getElementById("set-line-target").value = s.LINE_TARGET_ID || "";
+      document.getElementById("set-line-enabled").checked = String(s.LINE_NOTIFY_ENABLED || "TRUE").toUpperCase() !== "FALSE";
+      document.getElementById("set-free-override").checked = String(s.FREE_OVERRIDE_BLACKLIST || "TRUE").toUpperCase() !== "FALSE";
+      document.getElementById("set-kw-threshold").value = s.AUTO_BLOCK_KEYWORD_THRESHOLD || "2";
+      document.getElementById("set-cat-threshold").value = s.AUTO_BLOCK_CATEGORY_THRESHOLD || "3";
+      document.getElementById("set-dedup-hours").value = s.DEDUP_WINDOW_HOURS || "24";
+      document.getElementById("set-groups").value = s.MONITORED_GROUPS || "油飯DD,春日部,howcome";
+      document.getElementById("set-gas-url").value = getGasUrl() || s.WEB_APP_URL || "";
+      document.getElementById("settings-result-banner").style.display = "none";
+      document.getElementById("settings-pwa-version-label").textContent = PWA_VERSION;
+
+      const logsContainer = document.getElementById("notify-logs-list");
+      const logs = appState.notifyLogs || [];
+      if (logs.length === 0) {
+        logsContainer.innerHTML = '<div style="font-size:0.78rem; color:var(--text-muted);">目前尚無通知紀錄。</div>';
+      } else {
+        logsContainer.innerHTML = logs.map(function(l) {
+          return '<div class="rule-item" style="padding:7px 10px;">' +
+            '<div class="rule-main">' +
+              '<div class="rule-val" style="font-size:0.78rem;">[' + escapeHtml(l.eventType) + '] ' + escapeHtml(l.status) + '</div>' +
+              '<div class="rule-sub">' + escapeHtml(l.time) + ' | ' + escapeHtml(l.summary) + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join("");
+      }
+
+      openModal("settings-modal");
+    }
+
+    function saveAllSettings() {
+      const customGasUrl = document.getElementById("set-gas-url").value.trim();
+      if (customGasUrl) {
+        localStorage.setItem("custom_deals_gas_url", customGasUrl);
+      } else {
+        localStorage.removeItem("custom_deals_gas_url");
+      }
+
+      const payloadSettings = {
+        LINE_TARGET_ID: document.getElementById("set-line-target").value.trim(),
+        LINE_NOTIFY_ENABLED: document.getElementById("set-line-enabled").checked ? "TRUE" : "FALSE",
+        FREE_OVERRIDE_BLACKLIST: document.getElementById("set-free-override").checked ? "TRUE" : "FALSE",
+        AUTO_BLOCK_KEYWORD_THRESHOLD: document.getElementById("set-kw-threshold").value || "2",
+        AUTO_BLOCK_CATEGORY_THRESHOLD: document.getElementById("set-cat-threshold").value || "3",
+        DEDUP_WINDOW_HOURS: document.getElementById("set-dedup-hours").value || "24",
+        MONITORED_GROUPS: document.getElementById("set-groups").value.trim(),
+        WEB_APP_URL: customGasUrl || DEFAULT_GAS_WEB_APP_URL,
+        THEME: localStorage.getItem("deals_theme") || "dark"
+      };
+
+      const newToken = document.getElementById("set-line-token").value.trim();
+      if (newToken) {
+        payloadSettings.LINE_CHANNEL_ACCESS_TOKEN = newToken;
+      }
+
+      const banner = document.getElementById("settings-result-banner");
+      callBackendApi("saveSettings", { settings: payloadSettings })
+        .then(function(res) {
+          banner.style.display = "block";
+          if (res && res.success) {
+            appState.settings = res.settings || appState.settings;
+            document.getElementById("token-status-badge").textContent = appState.settings.hasLineToken
+              ? ("已設定 " + (appState.settings.lineTokenPreview || ""))
+              : "尚未設定";
+            document.getElementById("set-line-token").value = "";
+            saveCache();
+            banner.className = "result-banner";
+            banner.textContent = res.message || "設定已儲存";
+          } else {
+            banner.className = "result-banner error";
+            banner.textContent = res && res.message ? res.message : "儲存失敗";
+          }
+        })
+        .catch(function(err) {
+          banner.style.display = "block";
+          banner.className = "result-banner error";
+          banner.textContent = "儲存失敗：" + err.message;
+        });
+    }
+
+    function triggerTestLineNotify() {
+      const banner = document.getElementById("settings-result-banner");
+      banner.style.display = "block";
+      banner.className = "result-banner";
+      banner.textContent = "正在發送測試推播...";
+
+      callBackendApi("testLineNotify", {})
+        .then(function(res) {
+          banner.className = res && res.success ? "result-banner" : "result-banner error";
+          banner.textContent = (res && res.message) ? res.message : "測試完成";
+        })
+        .catch(function(err) {
+          banner.className = "result-banner error";
+          banner.textContent = "測試失敗：" + err.message;
+        });
+    }
+
+    function copyGasUrl() {
+      const val = document.getElementById("set-gas-url").value.trim();
+      if (!val) {
+        showToast("目前尚未填入 Web App 網址");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(function() {
+          showToast("已複製 Web App 網址");
+        });
+      } else {
+        document.getElementById("set-gas-url").select();
+        document.execCommand("copy");
+        showToast("已複製 Web App 網址");
+      }
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("open");
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("open");
+    }
+
+    function closeModalIfBackdrop(e, id) {
+      if (e.target && e.target.id === id) closeModal(id);
+    }
+
+    function initApp() {
+      if (window.__dealsAppInited) return;
+      window.__dealsAppInited = true;
+
+      if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost")) {
+        navigator.serviceWorker.register("./sw.js").catch(function() {});
+      }
+
+      const verEl = document.getElementById("settings-pwa-version-label");
+      if (verEl) verEl.textContent = PWA_VERSION;
+
+      const oldVer = localStorage.getItem("deals_pwa_version");
+      if (oldVer !== PWA_VERSION) {
+        localStorage.setItem("deals_pwa_version", PWA_VERSION);
+        if (oldVer) {
+          const sp = new URLSearchParams(window.location.search);
+          sp.set("v", PWA_VERSION);
+          window.location.replace(window.location.pathname + "?" + sp.toString());
+          return;
+        }
+      }
+
+      if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+        document.body.style.paddingTop = 'calc(env(safe-area-inset-top, 0px) + 12px)';
+      }
+
+      const savedTheme = localStorage.getItem("deals_theme") || "dark";
+      selectTheme(savedTheme, true);
+
+      if (loadCache()) {
+        renderAll();
+        setSyncStatus("ok", "已載入本機快取，背景同步中...");
+      }
+
+      lastResumeSyncTime = Date.now();
+      loadDashboard(false);
+    }
+
+    function handleForegroundResume() {
+      if (!window.__dealsAppInited) return;
+      const now = Date.now();
+      if (now - lastResumeSyncTime < 4000) return;
+      lastResumeSyncTime = now;
+      loadDashboard(false);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initApp);
+    } else {
+      initApp();
+    }
+    document.addEventListener("visibilitychange", function() {
+      if (document.visibilityState === "visible") handleForegroundResume();
+    });
+    window.addEventListener("pageshow", handleForegroundResume);
+  </script>
+</body>
+</html>
