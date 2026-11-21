@@ -1089,6 +1089,7 @@
               <option value="關注分類">關注分類（自動通知）</option>
               <option value="黑名單關鍵字">黑名單關鍵字（自動過濾）</option>
               <option value="黑名單分類">黑名單分類（自動過濾）</option>
+              <option value="黑名單平台">黑名單平台（自動過濾，如 酷澎）</option>
             </select>
             <input type="text" id="new-rule-value" class="form-input" placeholder="輸入關鍵字或分類名稱">
           </div>
@@ -1221,7 +1222,7 @@
         <div class="version-footer">
           <div>
             <span style="color:var(--text-muted);">系統版本：</span>
-            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.1</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.2</span>
           </div>
           <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
         </div>
@@ -1233,7 +1234,7 @@
 
   <script>
     // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
-    const PWA_VERSION = "1.1.1";
+    const PWA_VERSION = "1.1.2";
     const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
     const CACHE_KEY = "deals_fast_dash_cache_v1";
 
