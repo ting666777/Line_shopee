@@ -1024,7 +1024,7 @@
       </div>
       <div class="tab-card tab-notified" id="tab-已通知" onclick="switchTab('已通知')">
         <span class="tab-count" id="cnt-notified">0</span>
-        <span class="tab-label">精華通知</span>
+        <span class="tab-label">已推播 (LINE)</span>
       </div>
       <div class="tab-card tab-interested" id="tab-已收藏" onclick="switchTab('已收藏')">
         <span class="tab-count" id="cnt-interested">0</span>
@@ -1077,28 +1077,28 @@
   <div class="modal-backdrop" id="track-modal" onclick="closeModalIfBackdrop(event, 'track-modal')">
     <div class="modal-sheet">
       <div class="modal-head">
-        <h2 class="modal-title">加入收藏並追蹤未來通知</h2>
+        <h2 class="modal-title">加入收藏並設為 LINE 自動推播</h2>
         <button type="button" class="close-btn" onclick="closeModal('track-modal')">關閉</button>
       </div>
       <div class="modal-body">
         <div style="font-size:0.84rem; color:var(--text-muted); line-height:1.5;">
-          選擇要追蹤的關鍵字或分類，往後群組出現相符優惠時，系統會自動歸入「精華通知」並發送 LINE 推播。
+          選擇要加入「LINE 推播清單」的關鍵字或分類，往後群組只要出現相符優惠（且未命中黑名單），就會立刻傳送 LINE 推播通知。
         </div>
         <div class="form-group">
-          <label class="form-label">追蹤對象類型</label>
+          <label class="form-label">推播對象類型</label>
           <select id="track-target-select" class="form-select" onchange="onTrackTargetTypeChange()">
-            <option value="關鍵字">關鍵字（精準追蹤商品或品牌）</option>
-            <option value="分類">分類（追蹤整個商品分類）</option>
+            <option value="關鍵字">關鍵字（精準推播特定商品或品牌）</option>
+            <option value="分類">分類（推播整個商品分類）</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">追蹤內容</label>
-          <input type="text" id="track-value-input" class="form-input" placeholder="請輸入要自動通知的關鍵字或分類">
+          <label class="form-label">推播內容（可點下方建議詞或自行輸入）</label>
+          <input type="text" id="track-value-input" class="form-input" placeholder="請輸入要自動推播的關鍵字或分類">
           <div class="pill-strip" id="track-suggestions" style="margin-top:6px;"></div>
         </div>
         <div style="display:flex; gap:8px; justify-content:flex-end;">
-          <button type="button" class="icon-btn" onclick="confirmTrackInterested(false)">僅收藏不追蹤</button>
-          <button type="button" class="icon-btn primary" onclick="confirmTrackInterested(true)">收藏並啟用自動通知</button>
+          <button type="button" class="icon-btn" onclick="confirmTrackInterested(false)">僅收藏不推播</button>
+          <button type="button" class="icon-btn primary" onclick="confirmTrackInterested(true)">收藏並加入 LINE 推播</button>
         </div>
       </div>
     </div>
@@ -1108,15 +1108,17 @@
   <div class="modal-backdrop" id="rules-modal" onclick="closeModalIfBackdrop(event, 'rules-modal')">
     <div class="modal-sheet">
       <div class="modal-head">
-        <h2 class="modal-title">關鍵字與分類學習規則管理</h2>
+        <h2 class="modal-title">LINE 推播與黑名單規則管理</h2>
         <button type="button" class="close-btn" onclick="closeModal('rules-modal')">關閉</button>
       </div>
       <div class="modal-subhead">
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px; line-height:1.45;">
+          判斷順序：<strong style="color:var(--bad);">1. 黑名單封鎖（直接擋掉）</strong> / <strong style="color:var(--good);">2. LINE 推播清單（立刻傳 LINE）</strong> / <strong style="color:var(--accent);">3. 網頁待確認</strong>
+        </div>
         <div class="pill-strip" id="rules-tab-bar" style="padding-bottom:0;">
-          <button type="button" class="filter-pill active" onclick="switchRulesTab('白名單')">強制白名單</button>
-          <button type="button" class="filter-pill" onclick="switchRulesTab('關注')">關注通知</button>
-          <button type="button" class="filter-pill" onclick="switchRulesTab('黑名單')">黑名單封鎖</button>
-          <button type="button" class="filter-pill" onclick="switchRulesTab('扣分')">扣分觀察中</button>
+          <button type="button" class="filter-pill active" data-rule-tab="推播" onclick="switchRulesTab('推播')">LINE 推播清單</button>
+          <button type="button" class="filter-pill" data-rule-tab="黑名單" onclick="switchRulesTab('黑名單')">黑名單封鎖</button>
+          <button type="button" class="filter-pill" data-rule-tab="扣分" onclick="switchRulesTab('扣分')">學習扣分中</button>
         </div>
       </div>
       <div class="modal-body">
@@ -1124,14 +1126,13 @@
         <div class="filter-panel" style="margin-bottom:0; padding:10px;">
           <div class="form-row">
             <select id="new-rule-type" class="form-select" onchange="onNewRuleTypeChange()">
-              <option value="白名單關鍵字">白名單關鍵字（強制通知）</option>
-              <option value="關注關鍵字">關注關鍵字（自動通知）</option>
-              <option value="關注分類">關注分類（自動通知）</option>
-              <option value="黑名單關鍵字">黑名單關鍵字（自動過濾）</option>
-              <option value="黑名單分類">黑名單分類（自動過濾）</option>
-              <option value="黑名單平台">黑名單平台（自動過濾，如 酷澎）</option>
+              <option value="推播關鍵字">LINE 推播：關鍵字（命中即傳 LINE）</option>
+              <option value="推播分類">LINE 推播：分類（命中即傳 LINE）</option>
+              <option value="黑名單關鍵字">黑名單：關鍵字（直接過濾不看）</option>
+              <option value="黑名單分類">黑名單：分類（直接過濾不看）</option>
+              <option value="黑名單平台">黑名單：平台（如 酷澎，直接擋掉）</option>
             </select>
-            <input type="text" id="new-rule-value" class="form-input" placeholder="輸入關鍵字或分類名稱">
+            <input type="text" id="new-rule-value" class="form-input" placeholder="輸入關鍵字、分類或平台名稱">
           </div>
           <div id="new-rule-cat-hints" class="pill-strip" style="display:none;"></div>
           <button type="button" class="icon-btn primary" style="justify-content:center;" onclick="submitAddRule()">新增規則</button>
@@ -1202,8 +1203,8 @@
         </label>
 
         <label class="switch-row" style="cursor:pointer;">
-          <span>免費白名單永遠優先於黑名單封鎖</span>
-          <input type="checkbox" id="set-free-override" checked>
+          <span>免費/神價詞強制覆蓋黑名單（關閉時黑名單永遠最高優先）</span>
+          <input type="checkbox" id="set-free-override">
         </label>
 
         <div class="form-row">
@@ -1262,7 +1263,7 @@
         <div class="version-footer">
           <div>
             <span style="color:var(--text-muted);">系統版本：</span>
-            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.3</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.2.0</span>
           </div>
           <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
         </div>
@@ -1274,7 +1275,7 @@
 
   <script>
     // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
-    const PWA_VERSION = "1.1.3";
+    const PWA_VERSION = "1.2.0";
     const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
     const CACHE_KEY = "deals_fast_dash_cache_v1";
 
@@ -1291,7 +1292,7 @@
       platformFilter: "全部",
       onlyPreferredPending: false,
       searchQuery: "",
-      activeRulesTab: "白名單",
+      activeRulesTab: "推播",
       pendingTrackDeal: null
     };
 
@@ -1609,12 +1610,12 @@
 
       const htmlParts = list.map(function(d) {
         const isFree = String(d.reason || "").indexOf("白名單") !== -1 || d.price === "免費";
-        const isWatch = String(d.reason || "").indexOf("關注") !== -1;
+        const isWatch = String(d.reason || "").indexOf("關注") !== -1 || String(d.reason || "").indexOf("LINE 推播") !== -1;
 
         let badges = "";
-        if (isFree) badges += '<span class="badge free">免費/白名單</span>';
-        else if (isWatch) badges += '<span class="badge watch">關注命中</span>';
-        else if (d.status === "待確認" && d.isPreferredCategory) badges += '<span class="badge watch">符合興趣</span>';
+        if (isFree) badges += '<span class="badge free">免費/神價推播</span>';
+        else if (isWatch) badges += '<span class="badge watch">LINE 推播命中</span>';
+        else if (d.status === "待確認" && d.isPreferredCategory) badges += '<span class="badge watch">喜好分類</span>';
         if (d.platform) badges += '<span class="badge">' + escapeHtml(d.platform) + '</span>';
         if (d.category) badges += '<span class="badge cat">' + escapeHtml(d.category) + '</span>';
         if (d.group) badges += '<span class="badge">' + escapeHtml(d.group) + '</span>';
@@ -1633,15 +1634,15 @@
           ? '<div class="kw-row">' + d.keywords.map(function(kw) {
               const kwLow = kw.toLowerCase();
               const pen = penaltyMap["關鍵字:" + kwLow];
-              const penHtml = pen ? '<span class="kw-penalty">(' + pen + '/' + kwLimit + ')</span>' : '';
+              const penHtml = pen ? '<span class="kw-penalty">(扣分 ' + pen + '/' + kwLimit + ')</span>' : '';
               const isTracked = !!trackedKwSet[kwLow];
               const trackBtnHtml = isTracked
-                ? '<button type="button" class="kw-track-btn active" title="已在推播通知清單" onclick="quickTrackKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">已追蹤</button>'
-                : '<button type="button" class="kw-track-btn" title="追蹤此關鍵字並開啟推播" onclick="quickTrackKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">追蹤</button>';
+                ? '<button type="button" class="kw-track-btn active" title="已在 LINE 推播清單" onclick="quickTrackKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">已設推播</button>'
+                : '<button type="button" class="kw-track-btn" title="加入 LINE 推播清單" onclick="quickTrackKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">+推播</button>';
               return '<span class="kw-chip">' +
                 '<span>' + escapeHtml(kw) + '</span>' + penHtml +
                 trackBtnHtml +
-                '<button type="button" class="kw-block-btn" title="一鍵封鎖此關鍵字" onclick="quickBlockKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">封鎖</button>' +
+                '<button type="button" class="kw-block-btn" title="永久封鎖此關鍵字" onclick="quickBlockKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">封鎖</button>' +
               '</span>';
             }).join("") + '</div>'
           : '';
@@ -1659,24 +1660,24 @@
         if (d.status === "待確認") {
           const canBlockCat = d.category && d.category !== "其他商品" && d.category !== "免費好康";
           actionsHtml = '<div class="deal-actions cols-4">' +
-            '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">沒興趣 (學習扣分)</button>' +
+            '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">沒興趣</button>' +
             (canBlockCat
-              ? '<button type="button" class="act-btn block-cat" onclick="onBlockCategory(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(d.category) + '\')">封鎖此類：' + escapeHtml(d.category) + '</button>'
+              ? '<button type="button" class="act-btn block-cat" onclick="onBlockCategory(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(d.category) + '\')">封鎖分類：' + escapeHtml(d.category) + '</button>'
               : '<button type="button" class="act-btn" disabled style="opacity:0.45; cursor:not-allowed;">不封鎖泛用分類</button>') +
-            '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">有興趣 (收藏)</button>' +
-            '<button type="button" class="act-btn track" onclick="openTrackModal(\'' + escapeJsStr(d.id) + '\')">追蹤此類/關鍵字</button>' +
+            '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">收藏</button>' +
+            '<button type="button" class="act-btn track" onclick="openTrackModal(\'' + escapeJsStr(d.id) + '\')">設為 LINE 推播</button>' +
           '</div>';
         } else if (d.status === "已過濾" || d.status === "已忽略") {
           actionsHtml = '<div class="deal-actions">' +
             '<button type="button" class="act-btn" onclick="onRestoreDeal(\'' + escapeJsStr(d.id) + '\', \'待確認\')">還原至待確認</button>' +
-            '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">改為有興趣</button>' +
+            '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">加入收藏</button>' +
           '</div>';
         } else {
           actionsHtml = '<div class="deal-actions" style="grid-template-columns: repeat(3, 1fr);">' +
-            '<button type="button" class="act-btn track" onclick="openTrackModal(\'' + escapeJsStr(d.id) + '\')">追蹤此類/關鍵字</button>' +
-            '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">改標沒興趣</button>' +
+            '<button type="button" class="act-btn track" onclick="openTrackModal(\'' + escapeJsStr(d.id) + '\')">設為 LINE 推播</button>' +
+            '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">沒興趣</button>' +
             (d.status === "已通知"
-              ? '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">加入收藏</button>'
+              ? '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">收藏</button>'
               : '<button type="button" class="act-btn" onclick="onRestoreDeal(\'' + escapeJsStr(d.id) + '\', \'待確認\')">移回待確認</button>') +
           '</div>';
         }
@@ -1955,7 +1956,7 @@
     function switchRulesTab(tab) {
       appState.activeRulesTab = tab;
       document.querySelectorAll("#rules-tab-bar .filter-pill").forEach(function(el) {
-        el.classList.toggle("active", el.textContent.indexOf(tab) !== -1);
+        el.classList.toggle("active", el.getAttribute("data-rule-tab") === tab);
       });
       renderRulesList();
     }
@@ -1975,28 +1976,94 @@
 
     function renderRulesList() {
       const container = document.getElementById("rules-list-container");
-      const tab = appState.activeRulesTab;
+      const tab = appState.activeRulesTab || "推播";
+      const kwLimit = Number((appState.settings && appState.settings.AUTO_BLOCK_KEYWORD_THRESHOLD) || 2);
+      const catLimit = Number((appState.settings && appState.settings.AUTO_BLOCK_CATEGORY_THRESHOLD) || 3);
+
       const filtered = appState.rules.filter(function(r) {
-        if (tab === "白名單") return r.action === "強制通知";
-        if (tab === "關注") return r.action === "關注通知";
+        if (tab === "推播") return r.action === "強制通知" || r.action === "關注通知";
         if (tab === "黑名單") return r.action === "自動封鎖";
         return r.action === "觀察扣分";
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state" style="padding:20px;">此分頁目前沒有任何規則紀錄。</div>';
+        const emptyText = tab === "推播"
+          ? "目前沒有任何 LINE 推播規則。您可以在上方新增，或在商品卡片上點「+推播」。"
+          : (tab === "黑名單"
+              ? "目前沒有任何黑名單封鎖規則。"
+              : "目前沒有任何學習扣分中的紀錄。當您在待確認點「沒興趣」時，商品關鍵字會在此累計，滿 " + kwLimit + " 次自動轉入黑名單。");
+        container.innerHTML = '<div class="empty-state" style="padding:20px;">' + escapeHtml(emptyText) + '</div>';
         return;
       }
 
-      container.innerHTML = filtered.map(function(r) {
+      let topBarHtml = "";
+      if (tab === "扣分") {
+        topBarHtml = '<div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 2px;">' +
+          '<span style="font-size:0.75rem; color:var(--text-muted);">關鍵字滿 ' + kwLimit + ' 次自動轉入黑名單（喜好分類本身不會被自動封鎖）</span>' +
+          '<button type="button" class="kw-block-btn" style="padding:5px 10px;" onclick="clearAllPenalties()">清空全部扣分紀錄</button>' +
+        '</div>';
+      }
+
+      const itemsHtml = filtered.map(function(r) {
+        let typeBadge = "";
+        let subInfo = "";
+        let actionBtns = '<button type="button" class="kw-block-btn" style="padding:5px 9px;" onclick="deleteRuleById(\'' + escapeJsStr(r.id) + '\')">移除</button>';
+
+        if (tab === "推播") {
+          const isCat = r.targetType === "分類";
+          typeBadge = '<span class="badge free">' + (isCat ? "推播分類" : "推播關鍵字") + '</span>';
+          subInfo = "只要未命中黑名單，出現「" + escapeHtml(r.value) + "」即傳送 LINE 通知";
+        } else if (tab === "黑名單") {
+          const tagLabel = r.targetType === "平台" ? "封鎖平台" : (r.targetType === "分類" ? "封鎖分類" : "封鎖關鍵字");
+          typeBadge = '<span class="badge" style="background:var(--bad-soft); color:var(--bad); border-color:transparent;">' + tagLabel + '</span>';
+          subInfo = "最高優先攔截：直接進入已過濾，不傳 LINE 也不進待確認" + (r.note ? ("（" + escapeHtml(r.note) + "）") : "");
+        } else {
+          const limit = r.targetType === "分類" ? catLimit : kwLimit;
+          typeBadge = '<span class="badge merged">扣分 ' + Number(r.penaltyCount || 1) + ' / ' + limit + ' 次</span>';
+          subInfo = "目標：" + escapeHtml(r.targetType) + "（再點 " + Math.max(1, limit - Number(r.penaltyCount || 1)) + " 次沒興趣即自動封鎖）";
+          actionBtns = '<div style="display:flex; gap:6px; flex-shrink:0;">' +
+            '<button type="button" class="kw-track-btn" style="padding:5px 9px;" onclick="promotePenaltyToBlock(\'' + escapeJsStr(r.targetType) + '\', \'' + escapeJsStr(r.value) + '\')">直接封鎖</button>' +
+            '<button type="button" class="kw-block-btn" style="padding:5px 9px;" onclick="deleteRuleById(\'' + escapeJsStr(r.id) + '\')">移除</button>' +
+          '</div>';
+        }
+
         return '<div class="rule-item">' +
           '<div class="rule-main">' +
-            '<div class="rule-val">' + escapeHtml(r.value) + ' <span class="badge">' + escapeHtml(r.ruleType) + '</span></div>' +
-            '<div class="rule-sub">扣分：' + Number(r.penaltyCount || 0) + ' | 命中：' + Number(r.hitCount || 0) + (r.note ? ' | ' + escapeHtml(r.note) : '') + '</div>' +
+            '<div class="rule-val">' + escapeHtml(r.value) + ' ' + typeBadge + '</div>' +
+            '<div class="rule-sub">' + subInfo + '</div>' +
           '</div>' +
-          '<button type="button" class="kw-block-btn" style="padding:5px 9px;" onclick="deleteRuleById(\'' + escapeJsStr(r.id) + '\')">刪除</button>' +
+          actionBtns +
         '</div>';
       }).join("");
+
+      container.innerHTML = topBarHtml + itemsHtml;
+    }
+
+    function promotePenaltyToBlock(targetType, value) {
+      callBackendApi("blockRule", { targetType: targetType, value: value })
+        .then(function(res) {
+          if (res && res.success) {
+            if (Array.isArray(res.rules)) appState.rules = res.rules;
+            renderRulesList();
+            saveCache();
+            showToast(res.message || ("已直接封鎖「" + value + "」"));
+            if (res.autoFilteredCount > 0) loadDashboard(false);
+          }
+        })
+        .catch(function(err) { showToast("封鎖失敗：" + err.message); });
+    }
+
+    function clearAllPenalties() {
+      callBackendApi("clearAllPenalties", {})
+        .then(function(res) {
+          if (res && res.success) {
+            appState.rules = res.rules || [];
+            renderRulesList();
+            saveCache();
+            showToast(res.message || "已清空全部學習扣分紀錄");
+          }
+        })
+        .catch(function(err) { showToast("清空失敗：" + err.message); });
     }
 
     function submitAddRule() {
@@ -2089,7 +2156,7 @@
       document.getElementById("set-line-token").value = "";
       document.getElementById("set-line-target").value = s.LINE_TARGET_ID || "";
       document.getElementById("set-line-enabled").checked = String(s.LINE_NOTIFY_ENABLED || "TRUE").toUpperCase() !== "FALSE";
-      document.getElementById("set-free-override").checked = String(s.FREE_OVERRIDE_BLACKLIST || "TRUE").toUpperCase() !== "FALSE";
+      document.getElementById("set-free-override").checked = String(s.FREE_OVERRIDE_BLACKLIST || "FALSE").toUpperCase() === "TRUE";
       document.getElementById("set-kw-threshold").value = s.AUTO_BLOCK_KEYWORD_THRESHOLD || "2";
       document.getElementById("set-cat-threshold").value = s.AUTO_BLOCK_CATEGORY_THRESHOLD || "3";
       document.getElementById("set-dedup-minutes").value = s.DEDUP_WINDOW_MINUTES || "30";
