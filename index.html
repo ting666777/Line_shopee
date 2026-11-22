@@ -562,6 +562,29 @@
       transform: scale(0.94);
     }
 
+    .kw-track-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .kw-track-btn.active {
+      background: var(--good-soft);
+      color: var(--good);
+    }
+
+    .kw-track-btn:active {
+      transform: scale(0.94);
+    }
+
     /* URL links */
     .links-row {
       display: flex;
@@ -722,7 +745,7 @@
       border: 1px solid var(--card-border);
       width: 100%;
       max-width: 600px;
-      max-height: 88vh;
+      max-height: calc(88vh - env(safe-area-inset-top, 0px));
       border-radius: 20px 20px 0 0;
       display: flex;
       flex-direction: column;
@@ -737,12 +760,20 @@
     }
 
     .modal-head {
+      flex-shrink: 0;
       padding: 14px 16px;
       border-bottom: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+    }
+
+    .modal-subhead {
+      flex-shrink: 0;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--card-border);
+      background: var(--card);
     }
 
     .modal-title {
@@ -763,11 +794,18 @@
     }
 
     .modal-body {
+      flex: 1;
+      min-height: 0;
       padding: 16px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       display: flex;
       flex-direction: column;
       gap: 14px;
+    }
+
+    .modal-body > * {
+      flex-shrink: 0;
     }
 
     .form-group {
@@ -1073,13 +1111,15 @@
         <h2 class="modal-title">關鍵字與分類學習規則管理</h2>
         <button type="button" class="close-btn" onclick="closeModal('rules-modal')">關閉</button>
       </div>
-      <div class="modal-body">
-        <div class="pill-strip" id="rules-tab-bar">
+      <div class="modal-subhead">
+        <div class="pill-strip" id="rules-tab-bar" style="padding-bottom:0;">
           <button type="button" class="filter-pill active" onclick="switchRulesTab('白名單')">強制白名單</button>
           <button type="button" class="filter-pill" onclick="switchRulesTab('關注')">關注通知</button>
           <button type="button" class="filter-pill" onclick="switchRulesTab('黑名單')">黑名單封鎖</button>
           <button type="button" class="filter-pill" onclick="switchRulesTab('扣分')">扣分觀察中</button>
         </div>
+      </div>
+      <div class="modal-body">
 
         <div class="filter-panel" style="margin-bottom:0; padding:10px;">
           <div class="form-row">
@@ -1222,7 +1262,7 @@
         <div class="version-footer">
           <div>
             <span style="color:var(--text-muted);">系統版本：</span>
-            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.2</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.1.3</span>
           </div>
           <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
         </div>
@@ -1234,7 +1274,7 @@
 
   <script>
     // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
-    const PWA_VERSION = "1.1.2";
+    const PWA_VERSION = "1.1.3";
     const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
     const CACHE_KEY = "deals_fast_dash_cache_v1";
 
@@ -1488,6 +1528,17 @@
       return map;
     }
 
+    function getTrackedKeywordSet() {
+      const set = {};
+      for (let i = 0; i < appState.rules.length; i++) {
+        const r = appState.rules[i];
+        if ((r.action === "關注通知" || r.action === "強制通知") && r.targetType === "關鍵字") {
+          set[String(r.value).toLowerCase()] = r.action;
+        }
+      }
+      return set;
+    }
+
     function escapeHtml(str) {
       return String(str || "")
         .replace(/&/g, "&amp;")
@@ -1524,6 +1575,7 @@
       const grp = appState.groupFilter;
       const plat = appState.platformFilter;
       const penaltyMap = getPenaltyMap();
+      const trackedKwSet = getTrackedKeywordSet();
       const kwLimit = Number((appState.settings && appState.settings.AUTO_BLOCK_KEYWORD_THRESHOLD) || 2);
 
       const list = appState.deals.filter(function(d) {
@@ -1579,10 +1631,16 @@
 
         const kwHtml = (d.keywords && d.keywords.length > 0)
           ? '<div class="kw-row">' + d.keywords.map(function(kw) {
-              const pen = penaltyMap["關鍵字:" + kw.toLowerCase()];
+              const kwLow = kw.toLowerCase();
+              const pen = penaltyMap["關鍵字:" + kwLow];
               const penHtml = pen ? '<span class="kw-penalty">(' + pen + '/' + kwLimit + ')</span>' : '';
+              const isTracked = !!trackedKwSet[kwLow];
+              const trackBtnHtml = isTracked
+                ? '<button type="button" class="kw-track-btn active" title="已在推播通知清單" onclick="quickTrackKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">已追蹤</button>'
+                : '<button type="button" class="kw-track-btn" title="追蹤此關鍵字並開啟推播" onclick="quickTrackKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">追蹤</button>';
               return '<span class="kw-chip">' +
                 '<span>' + escapeHtml(kw) + '</span>' + penHtml +
+                trackBtnHtml +
                 '<button type="button" class="kw-block-btn" title="一鍵封鎖此關鍵字" onclick="quickBlockKeyword(\'' + escapeJsStr(d.id) + '\', \'' + escapeJsStr(kw) + '\')">封鎖</button>' +
               '</span>';
             }).join("") + '</div>'
@@ -1614,7 +1672,8 @@
             '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">改為有興趣</button>' +
           '</div>';
         } else {
-          actionsHtml = '<div class="deal-actions">' +
+          actionsHtml = '<div class="deal-actions" style="grid-template-columns: repeat(3, 1fr);">' +
+            '<button type="button" class="act-btn track" onclick="openTrackModal(\'' + escapeJsStr(d.id) + '\')">追蹤此類/關鍵字</button>' +
             '<button type="button" class="act-btn dislike" onclick="onMarkNotInterested(\'' + escapeJsStr(d.id) + '\')">改標沒興趣</button>' +
             (d.status === "已通知"
               ? '<button type="button" class="act-btn like" onclick="onMarkInterestedSimple(\'' + escapeJsStr(d.id) + '\')">加入收藏</button>'
@@ -1736,6 +1795,59 @@
           }
         })
         .catch(function(err) { showToast("同步封鎖失敗：" + err.message); });
+    }
+
+    function quickTrackKeyword(dealId, keyword) {
+      if (!keyword) return;
+      const kwLow = keyword.toLowerCase();
+      const trackedSet = getTrackedKeywordSet();
+      if (trackedSet[kwLow]) {
+        showToast("「" + keyword + "」已在自動推播清單中");
+        return;
+      }
+
+      const idx = appState.deals.findIndex(function(d) { return d.id === dealId; });
+      const deal = idx !== -1 ? appState.deals[idx] : null;
+      const wasNotified = !!(deal && deal.status === "已通知");
+
+      // 樂觀更新規則與卡片狀態
+      appState.rules = appState.rules.filter(function(r) {
+        return !(String(r.value).toLowerCase() === kwLow && r.targetType === "關鍵字" && r.action !== "強制通知");
+      });
+      appState.rules.push({
+        id: "WL_TMP_" + Date.now(),
+        ruleType: "關注關鍵字",
+        targetType: "關鍵字",
+        value: keyword,
+        action: "關注通知",
+        penaltyCount: 0,
+        hitCount: 0,
+        note: "點選關鍵字追蹤"
+      });
+
+      if (deal && !wasNotified) {
+        deal.status = "已收藏";
+        deal.reason = "收藏並追蹤：" + keyword;
+        recomputeCountsFromDeals();
+      }
+      saveCache();
+      renderAll();
+      showToast("已追蹤關鍵字「" + keyword + "」，之後出現就會推播通知");
+
+      const apiPromise = wasNotified
+        ? callBackendApi("addRule", { ruleType: "關注關鍵字", value: keyword })
+        : callBackendApi("markInterested", { dealId: dealId, subscribeTarget: "關鍵字", subscribeValue: keyword });
+
+      apiPromise
+        .then(function(res) {
+          if (res && res.success) {
+            if (Array.isArray(res.rules)) appState.rules = res.rules;
+            saveCache();
+            renderAll();
+            showToast(res.message || ("已追蹤關鍵字「" + keyword + "」"));
+          }
+        })
+        .catch(function(err) { showToast("追蹤同步失敗：" + err.message); });
     }
 
     function onMarkInterestedSimple(dealId) {
