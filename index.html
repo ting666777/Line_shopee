@@ -1263,7 +1263,7 @@
         <div class="version-footer">
           <div>
             <span style="color:var(--text-muted);">系統版本：</span>
-            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.2.0</span>
+            <span id="settings-pwa-version-label" style="font-weight:800; color:var(--accent);">1.2.1</span>
           </div>
           <button type="button" class="close-btn" onclick="forceUpdatePwa()">強制檢查更新</button>
         </div>
@@ -1275,7 +1275,7 @@
 
   <script>
     // 版本編號規範：自 1.0.0 起算；小更新為 1.1.0 / 1.2.0，極小修正為 1.0.1 / 1.0.2
-    const PWA_VERSION = "1.2.0";
+    const PWA_VERSION = "1.2.1";
     const DEFAULT_GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyoxpF0yUrV4nZsbTvyHIqf-6Q5EeD5r_ogkjn3cJBgRwh3shxES-gsrOJbDVo0hTyE/exec";
     const CACHE_KEY = "deals_fast_dash_cache_v1";
 
@@ -1656,6 +1656,10 @@
             }).join("") + '</div>'
           : '';
 
+        const promoCodeHtml = d.promoCode
+          ? '<div class="links-row"><button type="button" class="link-btn" style="background:var(--warn-soft); color:var(--warn); cursor:pointer;" onclick="copyPromoCode(\'' + escapeJsStr(d.promoCode) + '\')">複製折扣碼：' + escapeHtml(d.promoCode) + '</button></div>'
+          : '';
+
         let actionsHtml = "";
         if (d.status === "待確認") {
           const canBlockCat = d.category && d.category !== "其他商品" && d.category !== "免費好康";
@@ -1693,6 +1697,7 @@
             priceHtml +
           '</div>' +
           kwHtml +
+          promoCodeHtml +
           linksHtml +
           (d.reason ? '<div class="deal-reason">判定依據：' + escapeHtml(d.reason) + (d.lineSent && d.lineSent !== "否" ? ' | LINE：' + escapeHtml(d.lineSent) : '') + '</div>' : '') +
           '<button type="button" class="raw-toggle" onclick="toggleRawBox(\'' + safeDomId + '\')">檢視原始訊息</button>' +
@@ -2275,6 +2280,23 @@
           banner.className = "result-banner error";
           banner.textContent = "套用失敗：" + err.message;
         });
+    }
+
+    function copyPromoCode(code) {
+      if (!code) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(function() {
+          showToast("已複製折扣碼：" + code);
+        });
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = code;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("已複製折扣碼：" + code);
+      }
     }
 
     function copyGasUrl() {
